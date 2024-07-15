@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class TrackingManager : MonoBehaviour
 {
-    private string LisenseKey = "Put your key";
+    public static TrackingManager Instance { get; private set; }
+    private string LisenseKey = "";
     public GameObject OverlayCanvas;
 
     // Status
@@ -45,7 +46,16 @@ public class TrackingManager : MonoBehaviour
 
     void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     void Start()
@@ -80,8 +90,8 @@ public class TrackingManager : MonoBehaviour
         else
         {
             // Find GazePoint and CalibrationPoint under the new OverlayCanvas
-            GazePoint = OverlayCanvas.transform.Find("GazePoint").gameObject;
-            CalibrationPoint = OverlayCanvas.transform.Find("CalibrationPoint").gameObject;
+            GazePoint = OverlayCanvas.transform.Find("GazePoint")?.gameObject;
+            CalibrationPoint = OverlayCanvas.transform.Find("CalibrationPoint")?.gameObject;
 
             if (GazePoint == null)
             {
@@ -95,7 +105,7 @@ public class TrackingManager : MonoBehaviour
 
         if (isTracking)
         {
-            startTracking();
+            StartCoroutine(WaitForInitializationAndStartTracking());
         }
     }
 
@@ -162,12 +172,6 @@ public class TrackingManager : MonoBehaviour
                 isNextStepReady = false;
                 isCalibrating = false;
             }
-
-            if (CalibrationPoint.activeSelf)
-            {
-                CalibrationPoint.GetComponent<RawImage>().color = new Color(calibrationProgress, 0f, 0f);
-            }
-
         }
         else
         {
@@ -214,7 +218,6 @@ public class TrackingManager : MonoBehaviour
         startTracking();
     }
 
-
     public void deinitialize()
     {
         GazeTracker.deinitGazeTracker();
@@ -247,6 +250,8 @@ public class TrackingManager : MonoBehaviour
 
     public void startCalibration()
     {
+        Debug.Log("T!!!" + !isTracking);
+        Debug.Log("C!!!" + isCalibrating);
         if (!isTracking) return;
         if (isCalibrating) return;
 

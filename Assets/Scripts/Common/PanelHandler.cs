@@ -3,6 +3,7 @@ using UnityEngine;
 public class PanelHandler : MonoBehaviour
 {
     public GameObject settingsPanel;
+    public GameObject calibrationPanel;
     public GameObject statisticsPanel;
     public GameObject statistics;
 
@@ -16,6 +17,7 @@ public class PanelHandler : MonoBehaviour
     {
         // Ensure all panels are hidden at the start
         if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (calibrationPanel != null) calibrationPanel.SetActive(false);
         if (statisticsPanel != null) statisticsPanel.SetActive(false);
         if (statistics != null) statistics.SetActive(false);
         if (vmPanel != null) vmPanel.SetActive(false);
@@ -34,6 +36,18 @@ public class PanelHandler : MonoBehaviour
         else
         {
             Debug.LogError("SettingsPanel is not assigned!");
+        }
+    }
+
+    public void ToggleCalibrationPanel()
+    {
+        if (calibrationPanel != null)
+        {
+            calibrationPanel.SetActive(!calibrationPanel.activeSelf);
+        }
+        else
+        {
+            Debug.LogError("CalibrationPanel is not assigned!");
         }
     }
 

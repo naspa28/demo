@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GazePointScript : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GazePointScript : MonoBehaviour
     private Collider2D targetCollider;
     private Animator targetAnimator;
 
+    public GameObject congratsMessage;
+
     void Start()
     {
         // Get the RectTransform of the gazePoint UI element
@@ -17,6 +20,8 @@ public class GazePointScript : MonoBehaviour
         // Get the Collider2D and Animator components of the target object
         targetCollider = targetObject.GetComponent<Collider2D>();
         targetAnimator = targetObject.GetComponent<Animator>();
+
+        congratsMessage.SetActive(false);
     }
 
     void Update()
@@ -48,6 +53,26 @@ public class GazePointScript : MonoBehaviour
         {
             targetAnimator.enabled = false;
             Debug.Log("Failed to convert gaze point to world point");
+        }
+
+        // Check if the animation has finished a cycle
+        AnimatorStateInfo stateInfo = targetAnimator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.loop && stateInfo.normalizedTime >= 1.0f)
+        {
+            OnAnimationCycleEnd();
+        }
+    }
+
+    public void OnAnimationCycleEnd()
+    {
+        targetAnimator.enabled = false;
+        Debug.Log("Animation cycle ended, animator disabled");
+        congratsMessage.SetActive(true);
+
+        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        {
+            // Change the scene to MainScene
+            SceneManager.LoadScene("MainScene");
         }
     }
 }
