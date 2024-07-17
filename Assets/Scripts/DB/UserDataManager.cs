@@ -29,14 +29,14 @@ public class UserDataManager : MonoBehaviour
         UserDocument = document;
     }
 
-    public void UpdateLevel(string game, int level, int stars, int prog)
+    public void UpdateLevel(string game, int level, int star, int prog)
     {
         DocumentReference docRef = Instance.UserDocument.Reference;
 
         docRef.UpdateAsync(new Dictionary<string, object>
         {
             { $"games.{game}.level", level },
-            { $"games.{game}.star", stars },
+            { $"games.{game}.star", star },
             { $"games.{game}.prog", prog }
         }).ContinueWithOnMainThread(task =>
         {
@@ -55,7 +55,7 @@ public class UserDataManager : MonoBehaviour
         });
     }
 
-    public Task<(int level, int star, int addone)> GetGameData(string game)
+    public Task<(int level, int star, int prog)> GetGameData(string game)
     {
         var tcs = new TaskCompletionSource<(int, int, int)>();
 
