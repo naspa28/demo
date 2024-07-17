@@ -27,13 +27,12 @@ public class GameSession
     public int lvl;
     public int star;
     public int try_count;
-    public int corr;
-    public int ans_rate;
+    public float corr;
     public int time;
     public int conc;
 
-    public GameSession(string date, int lvl, int star, int try_count, int corr, 
-        int ans_rate, int time, int conc)
+    public GameSession(string date, int lvl, int star, int try_count, float corr, 
+        int time, int conc)
     {
         this.date = date;
         this.lvl = lvl;

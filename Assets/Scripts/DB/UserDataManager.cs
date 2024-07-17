@@ -29,14 +29,15 @@ public class UserDataManager : MonoBehaviour
         UserDocument = document;
     }
 
-    public void UpdateLevel(string game, int level, int stars)
+    public void UpdateLevel(string game, int level, int stars, int prog)
     {
         DocumentReference docRef = Instance.UserDocument.Reference;
 
         docRef.UpdateAsync(new Dictionary<string, object>
         {
             { $"games.{game}.level", level },
-            { $"games.{game}.star", stars }
+            { $"games.{game}.star", stars },
+            { $"games.{game}.prog", prog }
         }).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled)
@@ -54,9 +55,9 @@ public class UserDataManager : MonoBehaviour
         });
     }
 
-    public Task<(int level, int star)> GetGameData(string game)
+    public Task<(int level, int star, int addone)> GetGameData(string game)
     {
-        var tcs = new TaskCompletionSource<(int, int)>();
+        var tcs = new TaskCompletionSource<(int, int, int)>();
 
         DocumentReference docRef = Instance.UserDocument.Reference;
 
@@ -65,13 +66,13 @@ public class UserDataManager : MonoBehaviour
             if (task.IsCanceled)
             {
                 Debug.LogError("GetSnapshotAsync was canceled.");
-                tcs.SetResult((0, 0));
+                tcs.SetResult((0, 0, 0));
                 return;
             }
             if (task.IsFaulted)
             {
                 Debug.LogError("GetSnapshotAsync encountered an error: " + task.Exception);
-                tcs.SetResult((0, 0));
+                tcs.SetResult((0, 0, 0));
                 return;
             }
 
@@ -88,18 +89,18 @@ public class UserDataManager : MonoBehaviour
                         var gameInfo = games[game] as Dictionary<string, object>;
                         int level = Convert.ToInt32(gameInfo["level"]);
                         int star = Convert.ToInt32(gameInfo["star"]);
+                        int prog = Convert.ToInt32(gameInfo["prog"]);
 
-                        tcs.SetResult((level, star));
+                        tcs.SetResult((level, star, prog));
                         return;
                     }
                 }
             }
 
             Debug.Log("No data found for the specified game.");
-            tcs.SetResult((0, 0));
+            tcs.SetResult((0, 0, 0));
         });
 
         return tcs.Task;
     }
-
 }

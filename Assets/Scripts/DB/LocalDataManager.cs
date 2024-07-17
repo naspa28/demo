@@ -68,11 +68,10 @@ public class LocalDataManager : MonoBehaviour
         File.WriteAllText(filePath, jsonData);
     }
 
-    public void AddGameSession(string game, string date, int lvl, int star, int try_count, int corr,
-        int ans_rate, int time, int conc)
+    public void AddGameSession(string game, string date, int lvl, int star, int try_count, float corr,
+        int time, int conc)
     {
-        GameSession newSession = new(date, lvl, star, try_count, corr,
-                                    ans_rate, time, conc);
+        GameSession newSession = new(date, lvl, star, try_count, corr, time, conc);
 
         switch (game)
         {
