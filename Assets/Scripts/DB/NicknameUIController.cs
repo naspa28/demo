@@ -13,7 +13,7 @@ public class NicknameUIManager : MonoBehaviour
 
         if (userDocument != null)
         {
-            nicknameText.text = userDocument.GetValue<string>("nickname");
+            nicknameText.text = "Hi " + userDocument.GetValue<string>("nickname") + "!    Let's enjoy playing the game!";
         }
         else
         {

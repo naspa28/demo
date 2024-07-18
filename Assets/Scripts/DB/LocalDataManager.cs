@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 using Newtonsoft.Json;
+using UnityEngine.SceneManagement;
 
 public class LocalDataManager : MonoBehaviour
 {
@@ -12,26 +13,52 @@ public class LocalDataManager : MonoBehaviour
     public GameData gameData;
     private string filePath;
 
+    FirebaseAuth auth;
+
     void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            Initialize();
         }
         else
         {
             Destroy(gameObject);
         }
+
+        auth = FirebaseManager.Instance.Auth;
     }
 
-    private void Initialize()
+    public void SignOut()
+    {
+        if (auth.CurrentUser != null)
+        {
+            auth.SignOut();
+            Debug.Log("User signed out successfully.");
+
+            UserDataManager.Instance.UnsetUserDocument();
+            Deinitialize();
+            SceneManager.LoadScene("SignInScene");
+        }
+        else
+        {
+            Debug.Log("No user is currently signed in.");
+        }
+    }
+
+    public void Initialize()
     {
         string userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
         string hashedFileName = GetHashedFileName(userId);
         filePath = Path.Combine(Application.persistentDataPath, hashedFileName + ".json");
         LoadGameData();
+    }
+
+    public void Deinitialize()
+    {
+        filePath = null;
+        gameData = null;
     }
 
     private string GetHashedFileName(string input)
@@ -68,10 +95,10 @@ public class LocalDataManager : MonoBehaviour
         File.WriteAllText(filePath, jsonData);
     }
 
-    public void AddGameSession(string game, string date, int lvl, int star, int try_count, float corr,
+    public void AddGameSession(string game, string date, int lvl, int prog, int try_count, float corr,
         int time, int conc)
     {
-        GameSession newSession = new(date, lvl, star, try_count, corr, time, conc);
+        GameSession newSession = new(date, lvl, prog, try_count, corr, time, conc);
 
         switch (game)
         {

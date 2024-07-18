@@ -25,21 +25,20 @@ public class GameSession
 {
     public string date;
     public int lvl;
-    public int star;
+    public int prog;
     public int try_count;
     public float corr;
     public int time;
     public int conc;
 
-    public GameSession(string date, int lvl, int star, int try_count, float corr, 
+    public GameSession(string date, int lvl, int prog, int try_count, float corr, 
         int time, int conc)
     {
         this.date = date;
         this.lvl = lvl;
-        this.star = star;
+        this.prog = prog;
         this.try_count = try_count;
         this.corr = corr;
-        this.ans_rate = ans_rate;
         this.time = time;
         this.conc = conc;
     }

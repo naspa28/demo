@@ -44,6 +44,8 @@ public class TrackingManager : MonoBehaviour
     float calibrationX;
     float calibrationY;
 
+    private float attentionScore;
+
     void Awake()
     {
         if (Instance == null)
@@ -78,6 +80,11 @@ public class TrackingManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    public float getAttentionScore()
+    {
+        return attentionScore;
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Find the new OverlayCanvas in the new scene
@@ -107,6 +114,9 @@ public class TrackingManager : MonoBehaviour
         {
             StartCoroutine(WaitForInitializationAndStartTracking());
         }
+
+        attentionScore = 0f;
+        Debug.Log("Attention score reset.");
     }
 
     bool HasCameraPermission()
@@ -250,8 +260,6 @@ public class TrackingManager : MonoBehaviour
 
     public void startCalibration()
     {
-        Debug.Log("T!!!" + !isTracking);
-        Debug.Log("C!!!" + isCalibrating);
         if (!isTracking) return;
         if (isCalibrating) return;
 
@@ -343,7 +351,8 @@ public class TrackingManager : MonoBehaviour
 
     void onAttention(long timestampBegin, long timestamEnd, float score)
     {
-        Debug.Log("onAttention " + score);
+        attentionScore = score;
+        Debug.Log("onAttention " + attentionScore);
     }
 
     void onBlink(long timestamp, bool isBlinkLeft, bool isBlinkRight, bool isBlink, float leftOpenness, float rightOpenness)

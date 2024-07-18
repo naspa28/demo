@@ -1,7 +1,7 @@
 using Firebase.Auth;
 using Firebase.Extensions;
 using Firebase.Firestore;
-using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,6 +38,7 @@ public class SignInManager : MonoBehaviour
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 user.DisplayName, user.UserId);
 
+            LocalDataManager.Instance.Initialize();
             LoadUserDocument(user.UserId);
         });
     }
@@ -57,12 +58,46 @@ public class SignInManager : MonoBehaviour
             if (snapshot.Exists)
             {
                 UserDataManager.Instance.SetUserDocument(snapshot);
-                SceneManager.LoadScene("MainScene");
+                if (UserDataManager.Instance.UserDocument.GetValue<bool>("tutorial"))
+                {
+                    UpdateTutorialField(false, docRef);
+                    SceneManager.LoadScene("TutorialScene");
+                }
+                else
+                {
+                    SceneManager.LoadScene("MainScene");
+                }
             }
             else
             {
                 Debug.LogError("User document does not exist!");
             }
+        });
+    }
+
+    public void UpdateTutorialField(bool newValue, DocumentReference UserDocument)
+    {
+        if (UserDocument == null)
+        {
+            Debug.LogError("UserDocument is not set.");
+            return;
+        }
+
+        UserDocument.UpdateAsync(new Dictionary<string, object> {
+            { "tutorial", newValue }
+        }).ContinueWithOnMainThread(task => {
+            if (task.IsCanceled)
+            {
+                Debug.LogError("UpdateAsync was canceled.");
+                return;
+            }
+            if (task.IsFaulted)
+            {
+                Debug.LogError("UpdateAsync encountered an error: " + task.Exception);
+                return;
+            }
+
+            Debug.Log("Tutorial field updated successfully.");
         });
     }
 }

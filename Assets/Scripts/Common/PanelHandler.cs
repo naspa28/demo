@@ -5,7 +5,8 @@ public class PanelHandler : MonoBehaviour
     public GameObject settingsPanel;
     public GameObject calibrationPanel;
     public GameObject statisticsPanel;
-    public GameObject statistics;
+    public GameObject recordPanel;
+    public GameObject progressPanel;
 
     public GameObject vmPanel;
     public GameObject fgPanel;
@@ -19,7 +20,8 @@ public class PanelHandler : MonoBehaviour
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (calibrationPanel != null) calibrationPanel.SetActive(false);
         if (statisticsPanel != null) statisticsPanel.SetActive(false);
-        if (statistics != null) statistics.SetActive(false);
+        if (recordPanel != null) recordPanel.SetActive(false);
+        if (progressPanel != null) progressPanel.SetActive(false);
         if (vmPanel != null) vmPanel.SetActive(false);
         if (fgPanel != null) fgPanel.SetActive(false);
         if (pcPanel != null) pcPanel.SetActive(false);
@@ -63,15 +65,27 @@ public class PanelHandler : MonoBehaviour
         }
     }
 
-    public void ToggleStatistics()
+    public void ToggleRecordPanel()
     {
-        if (statistics != null)
+        if (recordPanel != null)
         {
-            statistics.SetActive(!statistics.activeSelf);
+            recordPanel.SetActive(!recordPanel.activeSelf);
         }
         else
         {
-            Debug.LogError("Statistics is not assigned!");
+            Debug.LogError("RecordPanel is not assigned!");
+        }
+    }
+
+    public void ToggleProgressPanel()
+    {
+        if (progressPanel != null)
+        {
+            progressPanel.SetActive(!progressPanel.activeSelf);
+        }
+        else
+        {
+            Debug.LogError("ProgressPanel is not assigned!");
         }
     }
 

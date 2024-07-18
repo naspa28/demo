@@ -1,15 +1,32 @@
 // 다람쥐 집 빠진 부분을 찾아줘! 에서 사용되는 스크립트
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System;
 
 public class FindDiffHouse : MonoBehaviour
 {
+    // 초기 시간, 종료 시간을 저장 할 변수
+    private int startTime;
+    private float endTime;
+
+    // 시도 횟수를 저장 할 변수
+    private int tryCount = 0;
+
     // 메시지 오브젝트 설정 
     private GameObject msg_congrate;
     private GameObject msg_retry;
+
+    public AudioSource backgroundMusicSource;
+
+    public AudioClip failSound; // 실패 시 재생할 음성
+
+    public AudioClip successSound; // 성공 시 재생할 음성
+
+    public string nextSceneName; // 전환할 씬 이름
+
+    private AudioSource audioSource;
+
 
     // 버튼 오브젝트 설정
     private GameObject btn_option_1;
@@ -27,6 +44,9 @@ public class FindDiffHouse : MonoBehaviour
 
     void Start()
     {
+        // 시작 시간 저장
+        startTime = int.Parse(DateTime.Now.ToString("HHmmss"));
+        
         // 메시지 오브젝트 설정
         msg_congrate = GameObject.Find("FindDiffHouseCanvas/msg_congrate");
         msg_retry = GameObject.Find("FindDiffHouseCanvas/msg_retry");
@@ -35,6 +55,13 @@ public class FindDiffHouse : MonoBehaviour
         // msg_congrate, msg_retry 오브젝트를 비활성화
         msg_congrate.SetActive(false);
         msg_retry.SetActive(false);
+
+        // AudioSource 컴포넌트 가져오기
+        audioSource = GetComponent<AudioSource>();
+
+        GameObject bgmObject = GameObject.Find("AudioManager");
+        backgroundMusicSource = bgmObject.GetComponent<AudioSource>();
+
 
         // 난수 생성
         answer = UnityEngine.Random.Range(0, 2);
@@ -74,18 +101,19 @@ public class FindDiffHouse : MonoBehaviour
         btn_option_2.GetComponent<Button>().onClick.AddListener(() => CheckAnswer(1));
         btn_option_2_background.GetComponent<Button>().onClick.AddListener(() => CheckAnswer(1));
     }
-
     // 정답, 오답 판정
     public void CheckAnswer(int selected)
     {
         // 디버깅 메시지
-        Debug.Log("selected: " + selected + ", answer: " + answer);
+        // Debug.Log("selected: " + selected + ", answer: " + answer);
+        tryCount++;
 
-        // 정답 판정
+        // 정답 판정    
         if (selected == answer)
         {
+            msg_retry.SetActive(false);
+
             // 정답 판정 시, msg_congrate 오브젝트를 활성화
-            // GameObject msg_congrate = GameObject.Find("UpsideDownCanvas/msg_congrate");
             msg_congrate.SetActive(true);
 
             // msg_congrate 오브젝트를 1초 후 비활성화
@@ -93,31 +121,42 @@ public class FindDiffHouse : MonoBehaviour
 
             IEnumerator DisableMsgCongrate()
             {
-                yield return new WaitForSeconds(1.0f);
-                msg_congrate.SetActive(false);
+                backgroundMusicSource.Stop();
+                audioSource.clip = successSound;
+                audioSource.Play();
+                msg_congrate.SetActive(true);
+
+                yield return new WaitForSeconds(successSound.length);
+                
             }
+            // 종료 시간 저장
+            endTime = int.Parse(DateTime.Now.ToString("HHmmss"));
+
+            ProgressScoreManager.Instance.CalculateProgressScore("sr", 2, startTime, endTime, tryCount);
+
+            // 게임 종료 코드 추가
+            //SceneManager.LoadScene(nextSceneName);
+
 
         }
         // 오답 판정
         else
         {
+            msg_congrate.SetActive(false);
+
             // 오답 판정 시, msg_retry 오브젝트를 활성화하고, 1초 후 비활성화
-            // GameObject msg_retry = GameObject.Find("UpsideDownCanvas/msg_retry");
             msg_retry.SetActive(true);
 
             StartCoroutine(DisableMsgRetry());
 
             IEnumerator DisableMsgRetry()
             {
-                yield return new WaitForSeconds(1.0f);
+                audioSource.clip = failSound;
+                audioSource.Play();
+                // 실패 음성 길이만큼 대기
+                yield return new WaitForSeconds(failSound.length);
                 msg_retry.SetActive(false);
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

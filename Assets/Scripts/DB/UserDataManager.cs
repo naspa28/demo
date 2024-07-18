@@ -29,6 +29,11 @@ public class UserDataManager : MonoBehaviour
         UserDocument = document;
     }
 
+    public void UnsetUserDocument()
+    {
+        UserDocument = null;
+    }
+
     public void UpdateLevel(string game, int level, int star, int prog)
     {
         DocumentReference docRef = Instance.UserDocument.Reference;

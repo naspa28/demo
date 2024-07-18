@@ -60,7 +60,8 @@ public class SignUpManager : MonoBehaviour
                 pc = new { level = 0, star = 0, prog = 0 },
                 sp = new { level = 0, star = 0, prog = 0 },
                 sr = new { level = 1, star = 0, prog = 0 },
-            }
+            },
+            tutorial = true
         };
 
         docRef.SetAsync(userData).ContinueWithOnMainThread(task =>
